@@ -2,8 +2,8 @@
   "name": "arazel-store-server",
   "private": true,
   "type": "module",
-  "main": "index.js",
+  "main": "index.mjs",
   "scripts": {
-    "server": "node --watch index.js"
+    "server": "node --watch index.mjs"
   }
 }
