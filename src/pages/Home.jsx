@@ -10,6 +10,7 @@ import { formatPrice } from '../lib/utils'
 import { api } from '../lib/api'
 
 export default function Home() {
+  useEffect(() => { document.title = 'Arazel Store' }, [])
   const [products, setProducts] = useState([])
 
   useEffect(() => {

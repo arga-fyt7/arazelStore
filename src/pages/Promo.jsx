@@ -119,6 +119,7 @@ function PromoCard({ promo, index }) {
 }
 
 export default function Promo() {
+  useEffect(() => { document.title = 'Promo - Arazel Store' }, [])
   const [allPromos, setAllPromos] = useState([])
 
   useEffect(() => {

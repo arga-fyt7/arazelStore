@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { motion } from 'motion/react'
 import { UserPlus, Mail, Lock, Eye, EyeOff, User, Phone } from 'lucide-react'
@@ -6,6 +6,7 @@ import { useAuth } from '../lib/useAuth'
 import { useToast } from '../lib/useToast'
 
 export default function Register() {
+  useEffect(() => { document.title = 'Daftar - Arazel Store' }, [])
   const [form, setForm] = useState({ name: '', email: '', phone: '', password: '' })
   const [show, setShow] = useState(false)
   const [submitting, setSubmitting] = useState(false)

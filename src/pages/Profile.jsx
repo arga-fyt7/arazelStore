@@ -24,6 +24,7 @@ const addressLabels = [
 ]
 
 export default function Profile() {
+  useEffect(() => { document.title = 'Profil - Arazel Store' }, [])
   const { user, logout, updateProfile, updatePassword } = useAuth()
   const { addToast } = useToast()
   const navigate = useNavigate()

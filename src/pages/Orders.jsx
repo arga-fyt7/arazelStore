@@ -14,6 +14,7 @@ const statusConfig = {
 }
 
 export default function Orders() {
+  useEffect(() => { document.title = 'Pesanan Saya - Arazel Store' }, [])
   const [orders, setOrders] = useState([])
   const [loading, setLoading] = useState(true)
 

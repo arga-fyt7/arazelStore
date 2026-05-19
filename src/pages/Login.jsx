@@ -7,6 +7,7 @@ import { useToast } from '../lib/useToast'
 import { api } from '../lib/api'
 
 export default function Login() {
+  useEffect(() => { document.title = 'Masuk - Arazel Store' }, [])
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [show, setShow] = useState(false)

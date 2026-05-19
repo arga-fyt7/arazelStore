@@ -59,6 +59,8 @@ export default function OrderDetail() {
   const [paymentInfo, setPaymentInfo] = useState(null)
   const [dragOver, setDragOver] = useState(false)
 
+  useEffect(() => { document.title = 'Detail Pesanan - Arazel Store' }, [])
+
   const [reviewRating, setReviewRating] = useState(5)
   const [reviewContent, setReviewContent] = useState('')
   const [submittingReview, setSubmittingReview] = useState(false)

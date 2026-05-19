@@ -73,6 +73,7 @@ function OptionCard({ selected, onClick, icon: Icon, title, subtitle, children }
 }
 
 export default function Checkout() {
+  useEffect(() => { document.title = 'Checkout - Arazel Store' }, [])
   const { user } = useAuth()
   const { cart, totalPrice, clearCart } = useCart()
   const { addToast } = useToast()

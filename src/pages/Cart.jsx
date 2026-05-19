@@ -9,6 +9,7 @@ import { formatPrice } from '../lib/utils'
 import { api } from '../lib/api'
 
 export default function Cart() {
+  useEffect(() => { document.title = 'Keranjang - Arazel Store' }, [])
   const { cart, dispatch, totalItems, totalPrice } = useCart()
   const { user } = useAuth()
   const { confirm } = useConfirm()

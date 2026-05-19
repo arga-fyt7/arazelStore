@@ -15,6 +15,7 @@ const sortOptions = [
 ]
 
 export default function Menu() {
+  useEffect(() => { document.title = 'Menu - Arazel Store' }, [])
   const [allProducts, setAllProducts] = useState([])
   const [activeCategory, setActiveCategory] = useState('semua')
   const [searchQuery, setSearchQuery] = useState('')

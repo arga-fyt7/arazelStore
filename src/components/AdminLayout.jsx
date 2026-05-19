@@ -30,6 +30,17 @@ export default function AdminLayout({ children }) {
   const notifRef = useRef(null)
 
   useEffect(() => {
+    const map = {
+      '/admin': 'Dashboard',
+      '/admin/orders': 'Pesanan',
+      '/admin/products': 'Produk',
+      '/admin/promos': 'Promo',
+      '/admin/pengaturan': 'Pengaturan',
+    }
+    document.title = `${map[location.pathname] || 'Admin'} - Arazel Store (Admin)`
+  }, [location.pathname])
+
+  useEffect(() => {
     let mounted = true
     function fetchNotifs() {
       api('/admin/notifications/recent').then(d => {

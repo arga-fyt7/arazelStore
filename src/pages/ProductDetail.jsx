@@ -15,6 +15,8 @@ export default function ProductDetail() {
   const { addToast } = useToast()
   const [qty, setQty] = useState(1)
 
+  useEffect(() => { document.title = 'Produk - Arazel Store' }, [])
+
   useEffect(() => {
     api(`/products/${id}`)
       .then(d => {
