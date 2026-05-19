@@ -1,6 +1,7 @@
 {
   "name": "arazel-store-server",
   "private": true,
+  "type": "module",
   "main": "index.js",
   "scripts": {
     "server": "node --watch index.js"

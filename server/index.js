@@ -20,8 +20,8 @@ import Notification from './models/Notification.js'
 import Review from './models/Review.js'
 import Order from './models/Order.js'
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
-const __filename = fileURLToPath(import.meta.url)
+const _dirname = path.dirname(fileURLToPath(import.meta.url))
+const _filename = fileURLToPath(import.meta.url)
 
 const app = express()
 const PORT = process.env.PORT || 5000
@@ -32,7 +32,7 @@ app.use(cors({
   credentials: true,
 }))
 app.use(express.json())
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
+app.use('/uploads', express.static(path.join(_dirname, 'uploads')))
 app.use('/api/auth', authRoutes)
 app.use('/api/orders', orderRoutes)
 app.use('/api/payments', paymentRoutes)
@@ -217,12 +217,12 @@ app.post('/api/reviews', verifyToken, async (req, res) => {
   }
 })
 
-const isLocal = process.argv[1] === __filename
+const isLocal = process.argv[1] === _filename
 if (isLocal) {
-  app.use(express.static(path.join(__dirname, '..', 'dist')))
+  app.use(express.static(path.join(_dirname, '..', 'dist')))
 
   app.get('*', (_req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'dist', 'index.html'))
+    res.sendFile(path.join(_dirname, '..', 'dist', 'index.html'))
   })
 }
 
