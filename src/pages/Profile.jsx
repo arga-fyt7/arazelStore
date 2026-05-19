@@ -8,20 +8,7 @@ import {
 } from 'lucide-react'
 import { useAuth } from '../lib/useAuth'
 import { useToast } from '../lib/useToast'
-
-function api(path, options = {}) {
-  const token = localStorage.getItem('token')
-  const { headers: optHeaders, ...rest } = options
-  return fetch(`/api${path}`, {
-    headers: { Authorization: `Bearer ${token}`, ...optHeaders },
-    ...rest,
-  }).then(async (res) => {
-    let data
-    try { data = await res.json() } catch { data = {} }
-    if (!res.ok) throw new Error(data.message || 'Terjadi kesalahan')
-    return data
-  })
-}
+import { api } from '../lib/api'
 
 const sections = [
   { id: 'akun', label: 'Informasi Akun', icon: User },

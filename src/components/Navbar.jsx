@@ -8,18 +8,7 @@ import { cn } from '../lib/utils'
 import { playNotificationSound, playOrderSound } from '../lib/sound'
 import { motion, AnimatePresence } from 'motion/react'
 import NotificationDropdown from './NotificationDropdown'
-
-async function api(path, options) {
-  const token = localStorage.getItem('token')
-  const { headers: optHeaders, ...rest } = options || {}
-  const res = await fetch(`/api${path}`, {
-    ...rest,
-    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json', ...optHeaders },
-  })
-  const data = await res.json()
-  if (!res.ok) throw new Error(data.message || 'Terjadi kesalahan')
-  return data
-}
+import { api } from '../lib/api'
 
 const navLinks = [
   { to: '/', label: 'Beranda' },
@@ -64,7 +53,7 @@ export default function Navbar() {
     async function fetchNotifs() {
       const items = []
       try {
-        const d = await fetch('/api/announcements').then(r => r.json())
+        const d = await api('/announcements')
         if (d.announcements) {
           d.announcements.forEach(a => {
             items.push({

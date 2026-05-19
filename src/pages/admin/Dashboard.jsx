@@ -7,18 +7,7 @@ import {
 } from 'lucide-react'
 import AdminLayout from '../../components/AdminLayout'
 import { formatPrice } from '../../lib/utils'
-
-async function api(path, options) {
-  const token = localStorage.getItem('token')
-  const { headers: optHeaders, ...rest } = options || {}
-  const res = await fetch(`/api${path}`, {
-    ...rest,
-    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json', ...optHeaders },
-  })
-  const data = await res.json()
-  if (!res.ok) throw new Error(data.message || 'Terjadi kesalahan')
-  return data
-}
+import { api } from '../../lib/api'
 
 const statusLabel = { pending: 'Menunggu', paid: 'Dibayar', processing: 'Diproses', done: 'Selesai', cancelled: 'Dibatalkan' }
 const statusColor = {

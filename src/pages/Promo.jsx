@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react'
 import { Tag, Clock, Copy, Check, Gift, Sparkles, Percent } from 'lucide-react'
 import { motion, AnimatePresence } from 'motion/react'
 import { formatPrice } from '../lib/utils'
+import { api } from '../lib/api'
 
 function Countdown({ date }) {
   const [now, setNow] = useState(Date.now())
@@ -121,8 +122,7 @@ export default function Promo() {
   const [allPromos, setAllPromos] = useState([])
 
   useEffect(() => {
-    fetch('/api/promos')
-      .then(r => r.json())
+    api('/promos')
       .then(d => setAllPromos(d.promos || []))
       .catch(() => {})
   }, [])

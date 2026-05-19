@@ -3,6 +3,7 @@ import { useLocation, Link } from 'react-router-dom'
 import { motion } from 'motion/react'
 import { Store, Clock, Calendar, AlertTriangle, Shield, X, LogIn } from 'lucide-react'
 import { useAuth } from '../lib/useAuth'
+import { api } from '../lib/api'
 
 const dayLabels = { senin: 'Senin', selasa: 'Selasa', rabu: 'Rabu', kamis: 'Kamis', jumat: 'Jumat', sabtu: 'Sabtu', minggu: 'Minggu' }
 const daysOfWeek = ['minggu', 'senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu']
@@ -61,8 +62,7 @@ export default function MaintenanceOverlay({ children }) {
   const [currentTime, setCurrentTime] = useState(nowInJakarta())
 
   useEffect(() => {
-    fetch('/api/store-status')
-      .then(r => r.json())
+    api('/store-status')
       .then(d => {
         setStatus(d)
         if (d.maintenance_until) {

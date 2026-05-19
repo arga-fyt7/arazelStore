@@ -3,22 +3,10 @@ import { useToast } from './useToast'
 
 const AuthContext = createContext()
 
-const API = '/api/auth'
+import { api as apiRaw } from './api'
 
-async function api(path, options = {}) {
-  const { headers: optHeaders, ...rest } = options
-  const res = await fetch(`${API}${path}`, {
-    headers: { 'Content-Type': 'application/json', ...optHeaders },
-    ...rest,
-  })
-  let data
-  try {
-    data = await res.json()
-  } catch {
-    throw new Error('Gagal terhubung ke server. Pastikan server backend sedang berjalan.')
-  }
-  if (!res.ok) throw new Error(data.message || 'Terjadi kesalahan')
-  return data
+function api(path, options = {}) {
+  return apiRaw(`/auth${path}`, options)
 }
 
 export function AuthProvider({ children }) {

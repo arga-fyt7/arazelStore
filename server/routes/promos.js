@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import pool from '../config/db.js'
+import Promo from '../models/Promo.js'
 import { verifyToken } from '../middleware/auth.js'
 
 const router = Router()
@@ -12,22 +12,21 @@ router.post('/validate', verifyToken, async (req, res) => {
       return res.status(400).json({ message: 'Kode promo wajib diisi' })
     }
 
-    const [promos] = await pool.query(
-      `SELECT * FROM promos WHERE code = ? AND active = TRUE
-       AND (end_date IS NULL OR end_date >= CURDATE())
-       AND (usage_limit IS NULL OR used_count < usage_limit)`,
-      [code]
-    )
+    const now = new Date()
+    const promo = await Promo.findOne({
+      code,
+      active: true,
+      $or: [{ endDate: null }, { endDate: { $gte: now } }],
+      $expr: { $or: [{ $eq: ['$usageLimit', null] }, { $lt: ['$usedCount', '$usageLimit'] }] },
+    })
 
-    if (promos.length === 0) {
+    if (!promo) {
       return res.status(400).json({ message: 'Kode promo tidak valid atau sudah habis' })
     }
 
-    const promo = promos[0]
-
-    if (subtotal < promo.min_purchase) {
+    if (subtotal < promo.minPurchase) {
       return res.status(400).json({
-        message: `Minimal pembelian Rp${promo.min_purchase.toLocaleString()} untuk promo ini`,
+        message: `Minimal pembelian Rp${promo.minPurchase.toLocaleString()} untuk promo ini`,
       })
     }
 
@@ -36,7 +35,7 @@ router.post('/validate', verifyToken, async (req, res) => {
 
     if (promo.type === 'percentage') {
       discountAmount = (subtotal * promo.value) / 100
-      if (promo.max_discount) discountAmount = Math.min(discountAmount, promo.max_discount)
+      if (promo.maxDiscount) discountAmount = Math.min(discountAmount, promo.maxDiscount)
     } else if (promo.type === 'fixed') {
       discountAmount = promo.value
     } else if (promo.type === 'free_shipping') {

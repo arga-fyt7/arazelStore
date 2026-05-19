@@ -7,13 +7,13 @@ import Testimonials from '../components/Testimonials'
 import { deriveCategories } from '../data/categories'
 import { motion } from 'motion/react'
 import { formatPrice } from '../lib/utils'
+import { api } from '../lib/api'
 
 export default function Home() {
   const [products, setProducts] = useState([])
 
   useEffect(() => {
-    fetch('/api/products')
-      .then(r => r.json())
+    api('/products')
       .then(d => setProducts(d.products || []))
       .catch(() => {})
   }, [])

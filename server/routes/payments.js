@@ -2,7 +2,7 @@ import { Router } from 'express'
 import multer from 'multer'
 import path from 'path'
 import { fileURLToPath } from 'url'
-import pool from '../config/db.js'
+import Order from '../models/Order.js'
 import { verifyToken } from '../middleware/auth.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -33,24 +33,20 @@ router.post('/upload', verifyToken, upload.single('proof'), async (req, res) => 
       return res.status(400).json({ message: 'Data pembayaran tidak lengkap' })
     }
 
-    const [orders] = await pool.query(
-      'SELECT * FROM orders WHERE id = ? AND user_id = ?',
-      [orderId, req.user.id]
-    )
-    if (orders.length === 0) {
+    const order = await Order.findOne({ _id: orderId, userId: req.user.id })
+    if (!order) {
       return res.status(404).json({ message: 'Pesanan tidak ditemukan' })
     }
 
     const proofImage = req.file ? `/uploads/payments/${req.file.filename}` : null
-    const paymentMethod = orders[0].payment_method
+    const paymentMethod = order.paymentMethod
 
-    await pool.query('DELETE FROM payments WHERE order_id = ? AND status = ?', [orderId, 'rejected'])
-
-    await pool.query(
-      `INSERT INTO payments (order_id, method, proof_image, account_name, account_number, amount, status)
-       VALUES (?, ?, ?, ?, ?, ?, 'pending')`,
-      [orderId, paymentMethod, proofImage, accountName || null, accountNumber || null, amount]
+    await Order.updateOne(
+      { _id: orderId, 'payment.status': 'rejected' },
+      { $unset: { payment: '' } }
     )
+
+    await Order.updateOne({ _id: orderId }, { $set: { payment: { method: paymentMethod, proofImage, accountName: accountName || null, accountNumber: accountNumber || null, amount: Number(amount), status: 'pending' } } })
 
     res.status(201).json({ message: 'Bukti pembayaran berhasil dikirim' })
   } catch (err) {

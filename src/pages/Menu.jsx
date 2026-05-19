@@ -5,6 +5,7 @@ import ProductCard from '../components/ProductCard'
 import CategoryBar from '../components/CategoryBar'
 import { deriveCategories } from '../data/categories'
 import { cn } from '../lib/utils'
+import { api } from '../lib/api'
 
 const sortOptions = [
   { value: 'default', label: 'Terbaru' },
@@ -22,8 +23,7 @@ export default function Menu() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetch('/api/products')
-      .then(r => r.json())
+    api('/products')
       .then(d => { setAllProducts(d.products || []) })
       .catch(() => {})
       .finally(() => setLoading(false))

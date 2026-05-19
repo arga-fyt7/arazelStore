@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import bcrypt from 'bcryptjs'
-import pool from '../config/db.js'
+import User from '../models/User.js'
+import Setting from '../models/Setting.js'
 import { generateToken, verifyToken } from '../middleware/auth.js'
 
 const router = Router()
@@ -17,24 +18,20 @@ router.post('/register', async (req, res) => {
       return res.status(400).json({ message: 'Password minimal 6 karakter' })
     }
 
-    const [existing] = await pool.query('SELECT id FROM users WHERE email = ?', [email])
-    if (existing.length > 0) {
+    const existing = await User.findOne({ email })
+    if (existing) {
       return res.status(400).json({ message: 'Email sudah terdaftar' })
     }
 
     const hashed = await bcrypt.hash(password, 10)
-    const [result] = await pool.query(
-      'INSERT INTO users (name, email, password, phone) VALUES (?, ?, ?, ?)',
-      [name, email, hashed, phone || null]
-    )
+    const user = await User.create({ name, email, password: hashed, phone: phone || null })
 
-    const user = { id: result.insertId, name, email, phone: phone || null, role: 'user' }
-    const token = generateToken(user)
+    const token = generateToken({ id: user._id, name: user.name, email: user.email, role: user.role })
 
     res.status(201).json({
       message: 'Registrasi berhasil',
       token,
-      user,
+      user: { id: user._id, name: user.name, email: user.email, phone: user.phone, role: user.role },
     })
   } catch (err) {
     console.error('Register error:', err)
@@ -43,9 +40,10 @@ router.post('/register', async (req, res) => {
 })
 
 function isStoreClosed(settings) {
-  const status = settings.find(s => s.setting_key === 'store_status')?.setting_value
+  const get = (key) => settings.find(s => s.key === key)?.value
+  const status = get('store_status')
   if (!status || status === 'open') {
-    const hoursRaw = settings.find(s => s.setting_key === 'operational_hours')?.setting_value
+    const hoursRaw = get('operational_hours')
     if (hoursRaw) {
       try {
         const hours = JSON.parse(hoursRaw)
@@ -69,7 +67,7 @@ function isStoreClosed(settings) {
   }
   if (status === 'tutup') return 'tutup'
   if (status === 'tutup_sementara') {
-    const untilRaw = settings.find(s => s.setting_key === 'maintenance_until')?.setting_value
+    const untilRaw = get('maintenance_until')
     if (untilRaw && new Date(untilRaw).getTime() > Date.now()) return 'tutup_sementara'
   }
   return null
@@ -83,38 +81,30 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ message: 'Email dan password wajib diisi' })
     }
 
-    const [rows] = await pool.query('SELECT * FROM users WHERE email = ?', [email])
-    if (rows.length === 0) {
+    const user = await User.findOne({ email })
+    if (!user) {
       return res.status(401).json({ message: 'Email atau password salah' })
     }
 
-    const user = rows[0]
     const match = await bcrypt.compare(password, user.password)
     if (!match) {
       return res.status(401).json({ message: 'Email atau password salah' })
     }
 
     if (user.role !== 'admin') {
-      const [settingRows] = await pool.query('SELECT setting_key, setting_value FROM settings')
+      const settingRows = await Setting.find()
       const closed = isStoreClosed(settingRows)
       if (closed) {
         return res.status(403).json({ message: 'Toko sedang tutup. Hanya administrator yang dapat login.' })
       }
     }
 
-    const token = generateToken(user)
+    const token = generateToken({ id: user._id, name: user.name, email: user.email, role: user.role })
 
     res.json({
       message: 'Login berhasil',
       token,
-      user: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        phone: user.phone,
-        role: user.role,
-        created_at: user.created_at,
-      },
+      user: { id: user._id, name: user.name, email: user.email, phone: user.phone, role: user.role, created_at: user.createdAt },
     })
   } catch (err) {
     console.error('Login error:', err)
@@ -124,14 +114,11 @@ router.post('/login', async (req, res) => {
 
 router.get('/me', verifyToken, async (req, res) => {
   try {
-    const [rows] = await pool.query(
-      'SELECT id, name, email, phone, role, created_at FROM users WHERE id = ?',
-      [req.user.id]
-    )
-    if (rows.length === 0) {
+    const user = await User.findById(req.user.id).select('name email phone role createdAt')
+    if (!user) {
       return res.status(404).json({ message: 'User tidak ditemukan' })
     }
-    res.json({ user: rows[0] })
+    res.json({ user: { id: user._id, name: user.name, email: user.email, phone: user.phone, role: user.role, created_at: user.createdAt } })
   } catch (err) {
     console.error('Get profile error:', err)
     res.status(500).json({ message: 'Terjadi kesalahan server' })
@@ -141,18 +128,9 @@ router.get('/me', verifyToken, async (req, res) => {
 router.put('/profile', verifyToken, async (req, res) => {
   try {
     const { name, phone } = req.body
-    await pool.query('UPDATE users SET name = ?, phone = ? WHERE id = ?', [
-      name,
-      phone || null,
-      req.user.id,
-    ])
-
-    const [rows] = await pool.query(
-      'SELECT id, name, email, phone, role, created_at FROM users WHERE id = ?',
-      [req.user.id]
-    )
-
-    res.json({ message: 'Profil berhasil diperbarui', user: rows[0] })
+    const user = await User.findByIdAndUpdate(req.user.id, { name, phone: phone || null }, { new: true }).select('name email phone role createdAt')
+    if (!user) return res.status(404).json({ message: 'User tidak ditemukan' })
+    res.json({ message: 'Profil berhasil diperbarui', user: { id: user._id, name: user.name, email: user.email, phone: user.phone, role: user.role, created_at: user.createdAt } })
   } catch (err) {
     console.error('Update profile error:', err)
     res.status(500).json({ message: 'Terjadi kesalahan server' })
@@ -171,14 +149,14 @@ router.put('/password', verifyToken, async (req, res) => {
       return res.status(400).json({ message: 'Password baru minimal 6 karakter' })
     }
 
-    const [rows] = await pool.query('SELECT password FROM users WHERE id = ?', [req.user.id])
-    const match = await bcrypt.compare(currentPassword, rows[0].password)
+    const user = await User.findById(req.user.id).select('password')
+    const match = await bcrypt.compare(currentPassword, user.password)
     if (!match) {
       return res.status(400).json({ message: 'Password saat ini salah' })
     }
 
     const hashed = await bcrypt.hash(newPassword, 10)
-    await pool.query('UPDATE users SET password = ? WHERE id = ?', [hashed, req.user.id])
+    await User.findByIdAndUpdate(req.user.id, { password: hashed })
 
     res.json({ message: 'Password berhasil diubah' })
   } catch (err) {

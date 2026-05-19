@@ -8,18 +8,7 @@ import { useAuth } from '../lib/useAuth'
 import { cn } from '../lib/utils'
 import { playNotificationSound, playOrderSound } from '../lib/sound'
 import NotificationDropdown from './NotificationDropdown'
-
-async function api(path, options) {
-  const token = localStorage.getItem('token')
-  const { headers: optHeaders, ...rest } = options || {}
-  const res = await fetch(`/api${path}`, {
-    ...rest,
-    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json', ...optHeaders },
-  })
-  const data = await res.json()
-  if (!res.ok) throw new Error(data.message || 'Terjadi kesalahan')
-  return data
-}
+import { api } from '../lib/api'
 
 const navItems = [
   { to: '/admin/orders', label: 'Manajemen Pesanan', icon: ShoppingBag },

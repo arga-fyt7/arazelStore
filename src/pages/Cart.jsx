@@ -6,6 +6,7 @@ import { useAuth } from '../lib/useAuth'
 import { useCart } from '../lib/useCart'
 import { useConfirm } from '../lib/useConfirm'
 import { formatPrice } from '../lib/utils'
+import { api } from '../lib/api'
 
 export default function Cart() {
   const { cart, dispatch, totalItems, totalPrice } = useCart()
@@ -15,8 +16,7 @@ export default function Cart() {
   const [shipInfo, setShipInfo] = useState(null)
 
   useEffect(() => {
-    fetch('/api/shipping-info')
-      .then(r => r.json())
+    api('/shipping-info')
       .then(setShipInfo)
       .catch(() => {})
   }, [])

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'motion/react'
 import { Star } from 'lucide-react'
+import { api } from '../lib/api'
 
 function getInitials(name) {
   return name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()
@@ -10,8 +11,7 @@ export default function Testimonials() {
   const [reviews, setReviews] = useState([])
 
   useEffect(() => {
-    fetch('/api/reviews')
-      .then(r => r.json())
+    api('/reviews')
       .then(d => setReviews(d.reviews || []))
       .catch(() => {})
   }, [])

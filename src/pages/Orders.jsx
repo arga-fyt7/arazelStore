@@ -3,20 +3,7 @@ import { Link } from 'react-router-dom'
 import { motion } from 'motion/react'
 import { Package, Clock, CheckCircle, X, ArrowRight } from 'lucide-react'
 import { formatPrice } from '../lib/utils'
-
-function api(path, options = {}) {
-  const token = localStorage.getItem('token')
-  const { headers: optHeaders, ...rest } = options
-  return fetch(`/api${path}`, {
-    headers: { Authorization: `Bearer ${token}`, ...optHeaders },
-    ...rest,
-  }).then(async (res) => {
-    let data
-    try { data = await res.json() } catch { data = {} }
-    if (!res.ok) throw new Error(data.message || 'Terjadi kesalahan')
-    return data
-  })
-}
+import { api } from '../lib/api'
 
 const statusConfig = {
   pending: { label: 'Menunggu Pembayaran', color: 'text-yellow-600 dark:text-yellow-400', bg: 'bg-yellow-100 dark:bg-yellow-900/20', icon: Clock },

@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react'
 import { useCart } from '../lib/useCart'
 import { useToast } from '../lib/useToast'
 import { formatPrice } from '../lib/utils'
+import { api } from '../lib/api'
 
 export default function ProductDetail() {
   const { id } = useParams()
@@ -15,13 +16,11 @@ export default function ProductDetail() {
   const [qty, setQty] = useState(1)
 
   useEffect(() => {
-    fetch(`/api/products/${id}`)
-      .then(r => r.json())
+    api(`/products/${id}`)
       .then(d => {
         setProduct(d.product)
         if (d.product) {
-          fetch('/api/products')
-            .then(r => r.json())
+          api('/products')
             .then(all => {
               setRelated((all.products || []).filter(p => p.category === d.product.category && p.id !== d.product.id).slice(0, 4))
             })

@@ -8,20 +8,7 @@ import {
 } from 'lucide-react'
 import { useToast } from '../lib/useToast'
 import { formatPrice } from '../lib/utils'
-
-function api(path, options = {}) {
-  const token = localStorage.getItem('token')
-  const { headers: optHeaders, ...rest } = options
-  return fetch(`/api${path}`, {
-    headers: { Authorization: `Bearer ${token}`, ...optHeaders },
-    ...rest,
-  }).then(async (res) => {
-    let data
-    try { data = await res.json() } catch { data = {} }
-    if (!res.ok) throw new Error(data.message || 'Terjadi kesalahan')
-    return data
-  })
-}
+import { api } from '../lib/api'
 
 const statusColor = {
   pending: 'bg-yellow-100 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-400',
@@ -84,7 +71,7 @@ export default function OrderDetail() {
   const [uploading, setUploading] = useState(false)
 
   useEffect(() => {
-    api('/payment-info').then(setPaymentInfo).catch(() => {})
+    api('/payment-info', { headers: {} }).then(setPaymentInfo).catch(() => {})
     api(`/orders/${id}`).then((data) => {
       setOrder(data.order)
       setItems(data.items)

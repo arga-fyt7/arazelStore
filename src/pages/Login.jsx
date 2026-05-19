@@ -4,6 +4,7 @@ import { motion } from 'motion/react'
 import { LogIn, Mail, Lock, Eye, EyeOff, Store } from 'lucide-react'
 import { useAuth } from '../lib/useAuth'
 import { useToast } from '../lib/useToast'
+import { api } from '../lib/api'
 
 export default function Login() {
   const [email, setEmail] = useState('')
@@ -17,8 +18,7 @@ export default function Login() {
   const navigate = useNavigate()
 
   useEffect(() => {
-    fetch('/api/store-status')
-      .then(r => r.json())
+    api('/store-status')
       .then(d => setStoreStatus(d))
       .catch(() => {})
       .finally(() => setStatusLoaded(true))

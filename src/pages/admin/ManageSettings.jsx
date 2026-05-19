@@ -5,18 +5,7 @@ import { Plus, Pencil, Trash2, X, Save, Megaphone, Store, Wrench, Building2, Lan
 import AdminLayout from '../../components/AdminLayout'
 import { useToast } from '../../lib/useToast'
 import { useConfirm } from '../../lib/useConfirm'
-
-async function api(path, options) {
-  const token = localStorage.getItem('token')
-  const { headers: optHeaders, ...rest } = options || {}
-  const res = await fetch(`/api${path}`, {
-    ...rest,
-    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json', ...optHeaders },
-  })
-  const data = await res.json()
-  if (!res.ok) throw new Error(data.message || 'Terjadi kesalahan')
-  return data
-}
+import { api } from '../../lib/api'
 
 const types = [
   { value: 'info', label: 'Info' },
