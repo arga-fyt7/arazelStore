@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.env
+.env.production
+.env.local
+server/uploads/payments/*
+!server/uploads/payments/.gitkeep
+.vite/
+*.log
+.DS_Store
+Thumbs.db
