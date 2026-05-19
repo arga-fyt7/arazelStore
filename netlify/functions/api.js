@@ -1,7 +1,7 @@
 import serverless from 'serverless-http'
 import mongoose from 'mongoose'
-import app from '../../server/index.js'
-import connectDB from '../../server/config/db.js'
+import app from '../../server/index.mjs'
+import connectDB from '../../server/config/db.mjs'
 
 let connected = false
 const baseHandler = serverless(app)

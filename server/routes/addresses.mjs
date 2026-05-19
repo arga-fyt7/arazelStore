@@ -1,6 +1,6 @@
 import { Router } from 'express'
-import Address from '../models/Address.js'
-import { verifyToken } from '../middleware/auth.js'
+import Address from '../models/Address.mjs'
+import { verifyToken } from '../middleware/auth.mjs'
 
 const router = Router()
 

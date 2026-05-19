@@ -2,8 +2,8 @@ import { Router } from 'express'
 import multer from 'multer'
 import path from 'path'
 import { fileURLToPath } from 'url'
-import Order from '../models/Order.js'
-import { verifyToken } from '../middleware/auth.js'
+import Order from '../models/Order.mjs'
+import { verifyToken } from '../middleware/auth.mjs'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const router = Router()

@@ -1,8 +1,8 @@
 import { Router } from 'express'
 import bcrypt from 'bcryptjs'
-import User from '../models/User.js'
-import Setting from '../models/Setting.js'
-import { generateToken, verifyToken } from '../middleware/auth.js'
+import User from '../models/User.mjs'
+import Setting from '../models/Setting.mjs'
+import { generateToken, verifyToken } from '../middleware/auth.mjs'
 
 const router = Router()
 

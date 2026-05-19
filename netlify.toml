@@ -1,3 +1,6 @@
+[functions]
+  node_bundler = "nft"
+
 [build]
   command = "npm run build"
   publish = "dist"

@@ -1,9 +1,9 @@
 import { Router } from 'express'
-import Order from '../models/Order.js'
-import Promo from '../models/Promo.js'
-import Setting from '../models/Setting.js'
-import Review from '../models/Review.js'
-import { verifyToken } from '../middleware/auth.js'
+import Order from '../models/Order.mjs'
+import Promo from '../models/Promo.mjs'
+import Setting from '../models/Setting.mjs'
+import Review from '../models/Review.mjs'
+import { verifyToken } from '../middleware/auth.mjs'
 
 const router = Router()
 

@@ -1,6 +1,6 @@
 import { Router } from 'express'
-import Promo from '../models/Promo.js'
-import { verifyToken } from '../middleware/auth.js'
+import Promo from '../models/Promo.mjs'
+import { verifyToken } from '../middleware/auth.mjs'
 
 const router = Router()
 

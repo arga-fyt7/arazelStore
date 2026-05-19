@@ -1,19 +1,19 @@
 import { Router } from 'express'
 import bcrypt from 'bcryptjs'
-import User from '../models/User.js'
-import Product from '../models/Product.js'
-import Promo from '../models/Promo.js'
-import Notification from '../models/Notification.js'
-import Setting from '../models/Setting.js'
-import Review from '../models/Review.js'
-import { verifyToken, isAdmin } from '../middleware/auth.js'
+import User from '../models/User.mjs'
+import Product from '../models/Product.mjs'
+import Promo from '../models/Promo.mjs'
+import Notification from '../models/Notification.mjs'
+import Setting from '../models/Setting.mjs'
+import Review from '../models/Review.mjs'
+import { verifyToken, isAdmin } from '../middleware/auth.mjs'
 
 const router = Router()
 router.use(verifyToken, isAdmin)
 
 router.get('/dashboard', async (_req, res) => {
   try {
-    const Order = (await import('../models/Order.js')).default
+    const Order = (await import('../models/Order.mjs')).default
 
     const totalOrders = await Order.countDocuments()
     const totalRevenueArr = await Order.aggregate([
@@ -95,7 +95,7 @@ router.get('/orders', async (req, res) => {
       ]
     }
 
-    const Order = (await import('../models/Order.js')).default
+    const Order = (await import('../models/Order.mjs')).default
     const orders = await Order.find(filter).sort({ createdAt: -1 }).populate('userId', 'name email').lean()
 
     const mapped = orders.map(o => ({
@@ -130,7 +130,7 @@ router.get('/orders', async (req, res) => {
 
 router.get('/orders/:id', async (req, res) => {
   try {
-    const Order = (await import('../models/Order.js')).default
+    const Order = (await import('../models/Order.mjs')).default
     const order = await Order.findById(req.params.id).populate('userId', 'name email phone').lean()
     if (!order) return res.status(404).json({ message: 'Pesanan tidak ditemukan' })
 
@@ -192,7 +192,7 @@ router.put('/orders/:id/status', async (req, res) => {
       return res.status(400).json({ message: 'Status tidak valid' })
     }
 
-    const Order = (await import('../models/Order.js')).default
+    const Order = (await import('../models/Order.mjs')).default
     const existing = await Order.findById(req.params.id)
     if (!existing) return res.status(404).json({ message: 'Pesanan tidak ditemukan' })
 
@@ -419,7 +419,7 @@ router.delete('/promos/:id', async (req, res) => {
 
 router.get('/payments', async (req, res) => {
   try {
-    const Order = (await import('../models/Order.js')).default
+    const Order = (await import('../models/Order.mjs')).default
     const { status } = req.query
     const match = { payment: { $exists: true, $ne: null } }
     if (status && status !== 'all') {
@@ -460,7 +460,7 @@ router.put('/payments/:id/verify', async (req, res) => {
       return res.status(400).json({ message: 'Status tidak valid' })
     }
 
-    const Order = (await import('../models/Order.js')).default
+    const Order = (await import('../models/Order.mjs')).default
     const order = await Order.findOne({ 'payment._id': req.params.id })
     if (!order) return res.status(404).json({ message: 'Pembayaran tidak ditemukan' })
 
@@ -479,7 +479,7 @@ router.put('/payments/:id/verify', async (req, res) => {
 
 router.get('/users', async (_req, res) => {
   try {
-    const Order = (await import('../models/Order.js')).default
+    const Order = (await import('../models/Order.mjs')).default
     const users = await User.find().sort({ createdAt: -1 }).lean()
 
     const mapped = await Promise.all(users.map(async (u) => {
@@ -682,7 +682,7 @@ router.put('/settings', async (req, res) => {
 
 router.get('/notifications/recent', async (_req, res) => {
   try {
-    const Order = (await import('../models/Order.js')).default
+    const Order = (await import('../models/Order.mjs')).default
 
     const todayStart = new Date()
     todayStart.setHours(0, 0, 0, 0)
